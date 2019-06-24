@@ -14,6 +14,6 @@ namespace BangazonAPI.Models
         public int EmployeeId { get; set; }
 
         [Required]
-        public int ProgramId { get; set; }
+        public int TrainingProgramId { get; set; }
     }
 }

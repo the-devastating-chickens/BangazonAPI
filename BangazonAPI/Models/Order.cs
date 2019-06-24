@@ -11,13 +11,9 @@ namespace BangazonAPI.Models
         public int Id { get; set; }
 
         [Required]
-        public DateTime OrderDate { get; set; }
-
-        [Required]
         public int CustomerId { get; set; }
 
         [Required]
-
         public int PaymentTypeId { get; set; }
     }
 }

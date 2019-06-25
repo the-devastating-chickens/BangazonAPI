@@ -95,13 +95,13 @@ namespace TestBangazonAPI
                 PaymentType ModPaymentType = new PaymentType
                 {
                     AcctNumber = newAccountNumber,
-                    Name = "Visa",
-                    CustomerId = 1
+                    Name = "MasterCard",
+                    CustomerId = 2
                 };
                 var modifiedPaymnentTypeAsJSON = JsonConvert.SerializeObject(ModPaymentType);
 
                 var response = await client.PutAsync(
-                    "/api/PaymentTypes/1",
+                    "/api/PaymentTypes/2",
                     new StringContent(modifiedPaymnentTypeAsJSON, Encoding.UTF8, "application/json")
                 );
                 string responseBody = await response.Content.ReadAsStringAsync();

@@ -68,7 +68,7 @@ namespace BangazonAPI.Controllers
         [HttpGet("{id}", Name = "GetProduct")]
         public async Task<IActionResult> Get([FromRoute] int id)
         {
-            if (!ProductTypeExists(id))
+            if (!ProductExists(id))
             {
                 return new StatusCodeResult(StatusCodes.Status404NotFound);
             }
@@ -133,8 +133,52 @@ namespace BangazonAPI.Controllers
 
         // PUT: api/Products/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        public async Task<IActionResult> Put([FromRoute] int id, [FromBody] Products product)
         {
+            try
+            {
+                using (SqlConnection conn = Connection)
+                {
+                    conn.Open();
+                    using (SqlCommand cmd = conn.CreateCommand())
+                    {
+                        cmd.CommandText = @"UPDATE Product
+                                            SET ProductTypeId = @ProductTypeId,
+                                            CustomerId = @CustomerId
+                                            Price = @Price,
+                                            Title = @Title,
+                                            Description = @Description,
+                                            Quantity = @Quantity
+                                            
+                                            WHERE Id = @id";
+                        
+                        cmd.Parameters.Add(new SqlParameter("@ProductTypeId", product.ProductTypeId));
+                        cmd.Parameters.Add(new SqlParameter("@CustomerId", product.CustomerId));
+                        cmd.Parameters.Add(new SqlParameter("@Price", product.Price));
+                        cmd.Parameters.Add(new SqlParameter("@Title", product.Title));
+                        cmd.Parameters.Add(new SqlParameter("@Description", product.Description));
+                        cmd.Parameters.Add(new SqlParameter("@Quantity", product.Quantity));
+
+                        int rowsAffected = await cmd.ExecuteNonQueryAsync();
+                        if (rowsAffected > 0)
+                        {
+                            return new StatusCodeResult(StatusCodes.Status204NoContent);
+                        }
+                        throw new Exception("No rows affected");
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                if (!ProductExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
         }
 
         // DELETE: api/ApiWithActions/5
@@ -143,7 +187,7 @@ namespace BangazonAPI.Controllers
         {
         }
 
-        private bool ProductTypeExists(int id)
+        private bool ProductExists(int id)
         {
             using (SqlConnection conn = Connection)
             {

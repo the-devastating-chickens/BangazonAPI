@@ -5,6 +5,8 @@ using Xunit;
 using BangazonAPI.Models;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Net.Http;
+using System.Text;
 
 namespace TestBangazonAPI
 {
@@ -23,7 +25,7 @@ namespace TestBangazonAPI
                 /*
                     ACT
                 */
-                var response = await client.GetAsync("/api/productTypes");
+                var response = await client.GetAsync("/api/ProductTypes");
 
 
                 string responseBody = await response.Content.ReadAsStringAsync();
@@ -43,7 +45,7 @@ namespace TestBangazonAPI
 
             using (var client = new APIClientProvider().Client)
             {
-                var response = await client.GetAsync("/productType/1");
+                var response = await client.GetAsync("/api/ProductTypes/1");
 
 
                 string responseBody = await response.Content.ReadAsStringAsync();
@@ -52,6 +54,34 @@ namespace TestBangazonAPI
                 Assert.Equal(HttpStatusCode.OK, response.StatusCode);
                 Assert.Equal("test", productType.Name);
                 Assert.NotNull(productType);
+            }
+        }
+
+        [Fact]
+        public async Task Test_Create_And_Delete_ProductTypes()
+        {
+            using (var client = new APIClientProvider().Client)
+            {
+                ProductType productName = new ProductType
+                {
+                    Name = "product1"
+                };
+                var productNameAsJSON = JsonConvert.SerializeObject(productName);
+
+
+                var response = await client.PostAsync("/api/ProductTypes",
+                               new StringContent(productNameAsJSON, Encoding.UTF8, "application/json")
+                );
+
+
+                string responseBody = await response.Content.ReadAsStringAsync();
+                var newProductName = JsonConvert.DeserializeObject<ProductType>(responseBody);
+
+                Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+                Assert.Equal("product1", newProductName.Name);
+
+                var deleteResponse = await client.DeleteAsync($"/api/ProductTypes/{newProductName.Id}");
+                Assert.Equal(HttpStatusCode.NoContent, deleteResponse.StatusCode);
             }
         }
     }

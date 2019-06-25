@@ -107,8 +107,28 @@ namespace BangazonAPI.Controllers
 
         // POST: api/Products
         [HttpPost]
-        public void Post([FromBody] string value)
+        public async Task<IActionResult> Post([FromBody] Products product)
         {
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"INSERT INTO Product (ProductTypeId, CustomerId, Price, Title, Description, Quantity)
+                                        OUTPUT INSERTED.Id
+                                        VALUES (@ProductTypeId, @CustomerId, @Price, @Title, @Description, @Quantity)";
+                    cmd.Parameters.Add(new SqlParameter("@ProductTypeId", product.ProductTypeId));
+                    cmd.Parameters.Add(new SqlParameter("@CustomerId", product.CustomerId));
+                    cmd.Parameters.Add(new SqlParameter("@Price", product.Price));
+                    cmd.Parameters.Add(new SqlParameter("@Title", product.Title));
+                    cmd.Parameters.Add(new SqlParameter("@Description", product.Description));
+                    cmd.Parameters.Add(new SqlParameter("@Quantity", product.Quantity));
+
+                    int newId = (int)await cmd.ExecuteScalarAsync();
+                    product.Id = newId;
+                    return CreatedAtRoute("GetProduct", new { id = newId }, product);
+                }
+            }
         }
 
         // PUT: api/Products/5

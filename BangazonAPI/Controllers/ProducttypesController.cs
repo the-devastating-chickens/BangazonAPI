@@ -70,7 +70,10 @@ namespace BangazonAPI.Controllers
                 conn.Open();
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
-                    cmd.CommandText = @"SELECT Id, Name WHERE Id = @id";
+                    cmd.CommandText = @"SELECT 
+                                           Id, 
+                                           Name 
+                                           WHERE Id = @id";
                     cmd.Parameters.Add(new SqlParameter("@id", id));
                     SqlDataReader reader = await cmd.ExecuteReaderAsync();
 
@@ -90,5 +93,30 @@ namespace BangazonAPI.Controllers
                 }
             }
         }
+
+        // POST api/values
+        [HttpPost]
+        public async Task<IActionResult> Post([FromBody] ProductType productType)
+        {
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    // More string interpolation
+                    cmd.CommandText = @"
+                        INSERT INTO ProductType (Name)
+                        OUTPUT INSERTED.Id
+                        VALUES (@Name)
+                    ";
+                    cmd.Parameters.Add(new SqlParameter("@Name", productType.Name));
+
+                    productType.Id = (int)await cmd.ExecuteScalarAsync();
+
+                    return CreatedAtRoute("GetCustomer", new { id = productType.Id }, productType);
+                }
+            }
+        }
+
     }
 }

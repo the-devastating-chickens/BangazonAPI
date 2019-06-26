@@ -52,7 +52,7 @@ namespace TestBangazonAPI
                 var productType = JsonConvert.DeserializeObject<ProductType>(responseBody);
 
                 Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-                Assert.Equal("test", productType.Name);
+                Assert.Equal("Book", productType.Name);
                 Assert.NotNull(productType);
             }
         }

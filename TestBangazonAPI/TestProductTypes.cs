@@ -45,14 +45,14 @@ namespace TestBangazonAPI
 
             using (var client = new APIClientProvider().Client)
             {
-                var response = await client.GetAsync("/api/ProductTypes/1");
+                var response = await client.GetAsync("/api/ProductTypes/2");
 
 
                 string responseBody = await response.Content.ReadAsStringAsync();
                 var productType = JsonConvert.DeserializeObject<ProductType>(responseBody);
 
                 Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-                Assert.Equal("Book", productType.Name);
+                Assert.Equal("DVD", productType.Name);
                 Assert.NotNull(productType);
             }
         }

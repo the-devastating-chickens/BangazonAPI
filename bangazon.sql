@@ -110,3 +110,38 @@ CREATE TABLE OrderProduct (
     CONSTRAINT FK_OrderProduct_Product FOREIGN KEY(ProductId) REFERENCES Product(Id),
     CONSTRAINT FK_OrderProduct_Order FOREIGN KEY(OrderId) REFERENCES [Order](Id)
 );
+
+SELECT * FROM Computer;
+
+INSERT INTO Customer (FirstName, LastName) VALUES ('Jonathan', 'Schaffer')
+INSERT INTO Customer (FirstName, LastName) VALUES ('Meag', 'Mueller')
+INSERT INTO Customer (FirstName, LastName) VALUES ('Michael', 'Yankura')
+INSERT INTO Customer (FirstName, LastName) VALUES ('Selam', 'Gebrekidan')
+INSERT INTO Customer (FirstName, LastName) VALUES ('Jameka', 'Echols')
+SELECT * FROM Customer
+
+INSERT INTO PaymentType (AcctNumber, [Name], CustomerId) VALUES (012, 'Visa', 1)
+INSERT INTO PaymentType (AcctNumber, [Name], CustomerId) VALUES (029, 'MasterCrad', 2)
+INSERT INTO PaymentType (AcctNumber, [Name], CustomerId) VALUES (0783, 'Visa', 3)
+INSERT INTO PaymentType (AcctNumber, [Name], CustomerId) VALUES (0262, 'American Express', 4)
+INSERT INTO PaymentType (AcctNumber, [Name], CustomerId) VALUES (182, 'Discover', 5)
+INSERT INTO PaymentType (AcctNumber, [Name], CustomerId) VALUES (382, 'American Express', 1)
+INSERT INTO PaymentType (AcctNumber, [Name], CustomerId) VALUES (685, 'MasterCard', 1)
+INSERT INTO PaymentType (AcctNumber, [Name], CustomerId) VALUES (986, 'Visa', 2)
+SELECT * FROM PaymentType
+
+INSERT INTO ProductType (Name) VALUES ('Book')
+INSERT INTO ProductType (Name) VALUE ('DVD')
+
+SELECT * FROM ProductType;
+
+-- INSERT INTO Product (Title, [Description], Price, Quantity, ProductTypeId, CustomerId) VALUES ('Lord of the Rings', 'A book about a ring and an epic journey to a volcano.', 10, 1, )
+-- INSERT INTO Product (Title, [Description], Price, Quantity, ProductTypeId, CustomerId) VALUES ('Jonathan', 'Schaffer')
+-- INSERT INTO Product (Title, [Description], Price, Quantity, ProductTypeId, CustomerId) VALUES ('Jonathan', 'Schaffer')
+-- INSERT INTO Product (Title, [Description], Price, Quantity, ProductTypeId, CustomerId) VALUES ('Jonathan', 'Schaffer')
+-- INSERT INTO Product (Title, [Description], Price, Quantity, ProductTypeId, CustomerId) VALUES ('Jonathan', 'Schaffer')
+SELECT * FROM Product
+ 
+-- SELECT p.Id, p.[Name], p.AcctNumber,p.CustomerId, c.FirstName, c.LastName 
+-- FROM PaymentType p
+-- JOIN Customer c ON p.CustomerId=c.Id

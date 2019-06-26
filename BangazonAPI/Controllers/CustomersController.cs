@@ -215,6 +215,7 @@ namespace BangazonAPI.Controllers
                     throw;
                 }
             }
+            return Ok();
         }
 
         private bool CustomerExists(int id)

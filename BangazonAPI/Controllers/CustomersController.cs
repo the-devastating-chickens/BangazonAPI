@@ -66,48 +66,78 @@ namespace BangazonAPI.Controllers
             }
         }
 
-        // GET api/customers/5
+        // GET api/customers/5 or api/customers/5?include=products
         [HttpGet("{id}", Name = "GetCustomer")]
-        public async Task<IActionResult> Get([FromRoute] int id)
+        public async Task<IActionResult> Get([FromRoute] int id, int? _include)
         {
             if (!CustomerExists(id))
             {
                 return new StatusCodeResult(StatusCodes.Status404NotFound);
             }
-                using (SqlConnection conn = Connection)
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+                using (SqlCommand cmd = conn.CreateCommand())
                 {
+                    cmd.CommandText = @"SELECT c.Id,
+                                               c.FirstName,
+                                               c.LastName
+                                          FROM Customer c
+                                         WHERE Id = @id
+                                      ";
+                    cmd.Parameters.Add(new SqlParameter("@id", id));
+                    SqlDataReader reader = await cmd.ExecuteReaderAsync();
+
+                    //if (id != null)
+                    //{
+                    //    cmd.CommandText = $"{cmd.CommandText} WHERE Id = @id";
+                    //}
+
+                    if (_include != null)
+                    {
+                        cmd.CommandText = @"SELECT c.Id,
+                                                   c.FirstName AS 'First Name',
+                                                   c.LastName AS 'Last Name',
+                                                   p.Title AS 'Title',
+                                                   p.[Description] AS 'Description',
+                                                   p.Price AS 'Price',
+                                                   p.Quantity AS 'Quantity'
+                                              FROM Customer c
+                                              JOIN Product p ON p.CustomerId = c.Id
+                                             WHERE Id = @id";
+                    }
+
+                    Customer customer = null;
+                    if (reader.Read())
+                    {
+                        customer = new Customer
+                        {
+                            Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                            FirstName = reader.GetString(reader.GetOrdinal("FirstName")),
+                            LastName = reader.GetString(reader.GetOrdinal("LastName")),
+
+                        };
+                    }
+
                     conn.Open();
                     using (SqlCommand cmd = conn.CreateCommand())
                     {
-                        cmd.CommandText = @"SELECT Id,
-                                                   FirstName,
-                                                   LastName
-                                              FROM Customer
-                                             WhERE Id = @id
-                                          ";
-                        cmd.Parameters.Add(new SqlParameter("@id", id));
-                        SqlDataReader reader = await cmd.ExecuteReaderAsync();
 
-                        Customer customer = null;
-                        if (reader.Read())
+                        if (customer != null)
                         {
-                            customer = new Customer
-                            {
-                                Id = reader.GetInt32(reader.GetOrdinal("Id")),
-                                FirstName = reader.GetString(reader.GetOrdinal("FirstName")),
-                                LastName = reader.GetString(reader.GetOrdinal("LastName")),
-                                // You might have more columns
-                            };
+                            cmd.Parameters.Add(new SqlParameter("@id", customer));
                         }
+                    }
 
-                        reader.Close();
+
+                    reader.Close();
 
                         return Ok(customer);
                     }
                 }
-        }
+            }
 
-        // POST api/customers
+// POST api/customers
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] Customer customer)
         {
@@ -215,7 +245,7 @@ namespace BangazonAPI.Controllers
                     throw;
                 }
             }
-            return Ok();
+            //return Ok();
         }
 
         private bool CustomerExists(int id)

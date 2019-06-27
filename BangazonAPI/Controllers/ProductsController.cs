@@ -40,11 +40,11 @@ namespace BangazonAPI.Controllers
                 {
                     cmd.CommandText = "SELECT Id, ProductTypeId, CustomerId, Price, Title, Description, Quantity FROM Product";
                     SqlDataReader reader = await cmd.ExecuteReaderAsync();
-                    List<Products> products = new List<Products>();
+                    List<Product> products = new List<Product>();
 
                     while (reader.Read())
                     {
-                        Products product = new Products
+                        Product product = new Product
                         {
                             Id = reader.GetInt32(reader.GetOrdinal("Id")),
                             ProductTypeId = reader.GetInt32(reader.GetOrdinal("ProductTypeId")),
@@ -83,11 +83,11 @@ namespace BangazonAPI.Controllers
                     cmd.Parameters.Add(new SqlParameter("@id", id));
                     SqlDataReader reader = await cmd.ExecuteReaderAsync();
 
-                    Products product = null;
+                    Product product = null;
 
                     if (reader.Read())
                     {
-                        product = new Products
+                        product = new Product
                         {
                             Id = reader.GetInt32(reader.GetOrdinal("Id")),
                             ProductTypeId = reader.GetInt32(reader.GetOrdinal("ProductTypeId")),
@@ -107,7 +107,7 @@ namespace BangazonAPI.Controllers
 
         // POST: api/Products
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody] Products product)
+        public async Task<IActionResult> Post([FromBody] Product product)
         {
             using (SqlConnection conn = Connection)
             {
@@ -133,7 +133,7 @@ namespace BangazonAPI.Controllers
 
         // PUT: api/Products/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> Put([FromRoute] int id, [FromBody] Products product)
+        public async Task<IActionResult> Put([FromRoute] int id, [FromBody] Product product)
         {
             try
             {

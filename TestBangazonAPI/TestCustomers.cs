@@ -42,10 +42,6 @@ namespace TestBangazonAPI
         {
             using (var client = new APIClientProvider().Client)
             {
-                /*
-                     ARRANGE
-                 */
-
 
                 /*
                     ACT
@@ -65,8 +61,38 @@ namespace TestBangazonAPI
             }
         }
 
-        
+        //[Fact]
+        //public async Task Test_Get_Customers_Product_By_Id()
+        //{
+        //    using (var client = new APIClientProvider().Client)
+        //    {
+        //        /*
+        //             ARRANGE
+        //         */
 
 
+        //        /*
+        //            ACT
+        //        */
+        //        var response = await client.GetAsync("/api/customers/1?_include=products");
+
+        //        string responseBody = await response.Content.ReadAsStringAsync();
+        //        var customer = JsonConvert.DeserializeObject<Customer>(responseBody);
+        //        var productList = JsonConvert.DeserializeObject<Product>(responseBody);
+
+        //        /*
+        //            ASSERT
+        //        */
+        //        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        //        Assert.Equal("Jonathan", customer.FirstName);
+        //        Assert.Equal("Schaffer", customer.LastName);
+        //        Assert.Equal("Lord of the Rings", productList.Title);
+        //        Assert.Equal("A book about a ring and an epic journey to a volcano.", productList.Description);
+        //        Assert.Equal(10, productList.Price);
+        //        Assert.Equal(5, productList.Quantity);
+        //        Assert.NotNull(customer);
+        //        Assert.NotNull(productList);
+        //    }
+        //}
     }
 }

@@ -22,7 +22,7 @@ namespace TestBangazonAPI
                 var response = await client.GetAsync("/api/PaymentTypes");
 
                 string responseBody = await response.Content.ReadAsStringAsync();
-                var paymentTypesList = JsonConvert.DeserializeObject<List<Products>>(responseBody);
+                var paymentTypesList = JsonConvert.DeserializeObject<List<Product>>(responseBody);
 
                 Assert.Equal(HttpStatusCode.OK, response.StatusCode);
                 Assert.True(paymentTypesList.Count > 0);
@@ -40,7 +40,7 @@ namespace TestBangazonAPI
 
 
                 string responseBody = await response.Content.ReadAsStringAsync();
-                var product = JsonConvert.DeserializeObject<Products>(responseBody);
+                var product = JsonConvert.DeserializeObject<Product>(responseBody);
 
                 Assert.Equal(HttpStatusCode.OK, response.StatusCode);
                 Assert.Equal(1, product.ProductTypeId);
@@ -59,7 +59,7 @@ namespace TestBangazonAPI
         {
             using (var client = new APIClientProvider().Client)
             {
-                Products BusterSword = new Products
+                Product BusterSword = new Product
                 {
                     ProductTypeId = 4,
                     CustomerId = 2,
@@ -78,7 +78,7 @@ namespace TestBangazonAPI
 
 
                 string responseBody = await response.Content.ReadAsStringAsync();
-                var newBusterSword = JsonConvert.DeserializeObject<Products>(responseBody);
+                var newBusterSword = JsonConvert.DeserializeObject<Product>(responseBody);
 
                 Assert.Equal(HttpStatusCode.Created, response.StatusCode);
                 Assert.Equal(4, newBusterSword.ProductTypeId);
@@ -103,7 +103,7 @@ namespace TestBangazonAPI
             using (var client = new APIClientProvider().Client)
             {
 
-                Products modifyProduct = new Products
+                Product modifyProduct = new Product
                 {
                     ProductTypeId = 2,
                     CustomerId = 2,
@@ -128,7 +128,7 @@ namespace TestBangazonAPI
                 getProduct.EnsureSuccessStatusCode();
 
                 string getProductBody = await getProduct.Content.ReadAsStringAsync();
-                Products newProduct = JsonConvert.DeserializeObject<Products>(getProductBody);
+                Product newProduct = JsonConvert.DeserializeObject<Product>(getProductBody);
 
                 Assert.Equal(HttpStatusCode.OK, getProduct.StatusCode);
                 Assert.Equal(newPrice, newProduct.Price);

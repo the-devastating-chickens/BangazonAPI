@@ -92,5 +92,47 @@ namespace TestBangazonAPI
                 Assert.Equal(HttpStatusCode.NoContent, deleteResponse.StatusCode);
             }
         }
+
+        /*This tests that you can update a single product from Products*/
+        [Fact]
+        public async Task Test_Modify_Products()
+        {
+            // Updating price
+            decimal newPrice = (decimal)17.0000;
+
+            using (var client = new APIClientProvider().Client)
+            {
+
+                Products modifyProduct = new Products
+                {
+                    ProductTypeId = 2,
+                    CustomerId = 2,
+                    Price = newPrice,
+                    Title = "It",
+                    Description = "A story about a creepy clown that hangs out in storm drains.",
+                    Quantity = 5,
+                };
+                var modifiedProductAsJSON = JsonConvert.SerializeObject(modifyProduct);
+
+                var response = await client.PutAsync(
+                    "/api/Products/2",
+                    new StringContent(modifiedProductAsJSON, Encoding.UTF8, "application/json")
+                );
+                string responseBody = await response.Content.ReadAsStringAsync();
+
+                Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+
+
+
+                var getProduct = await client.GetAsync("/api/Products/2");
+                getProduct.EnsureSuccessStatusCode();
+
+                string getProductBody = await getProduct.Content.ReadAsStringAsync();
+                Products newProduct = JsonConvert.DeserializeObject<Products>(getProductBody);
+
+                Assert.Equal(HttpStatusCode.OK, getProduct.StatusCode);
+                Assert.Equal(newPrice, newProduct.Price);
+            }
+        }
     }
 }

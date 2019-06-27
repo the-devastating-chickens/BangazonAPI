@@ -68,7 +68,7 @@ namespace BangazonAPI.Controllers
 
         // GET api/customers/5 or api/customers/5?include=products
         [HttpGet("{id}", Name = "GetCustomer")]
-        public async Task<IActionResult> Get([FromRoute] int id, int? _include)
+        public async Task<IActionResult> Get([FromRoute] int id, string _include)
         {
             if (!CustomerExists(id))
             {
@@ -79,16 +79,8 @@ namespace BangazonAPI.Controllers
                 conn.Open();
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
-                    cmd.CommandText = @"SELECT c.Id,
-                                               c.FirstName,
-                                               c.LastName
-                                          FROM Customer c
-                                         WHERE Id = @id
-                                      ";
-                    cmd.Parameters.Add(new SqlParameter("@id", id));
-                    SqlDataReader reader = await cmd.ExecuteReaderAsync();
 
-                    if (_include != null)
+                    if (_include == "products")
                     {
                         cmd.CommandText = @"SELECT c.Id,
                                                    c.FirstName AS 'First Name',
@@ -99,61 +91,57 @@ namespace BangazonAPI.Controllers
                                                    p.Quantity AS 'Quantity'
                                               FROM Customer c
                                               JOIN Product p ON p.CustomerId = c.Id
-                                             WHERE Id = @id";
+                                             WHERE c.Id = @id";
+
+                        cmd.Parameters.Add(new SqlParameter("@id", id));
                     }
+                    else
+                    {
+                        cmd.CommandText = @"SELECT c.Id,
+                                               c.FirstName AS 'First Name',
+                                               c.LastName AS 'Last Name'
+                                          FROM Customer c
+                                         WHERE c.Id = @id
+                                      ";
+                        cmd.Parameters.Add(new SqlParameter("@id", id));
+                    }
+                    SqlDataReader reader = await cmd.ExecuteReaderAsync();
+
+
 
                     Customer customer = null;
                     while (reader.Read())
                     {
-                        customer = new Customer
                         {
-                            Id = reader.GetInt32(reader.GetOrdinal("Id")),
-                            FirstName = reader.GetString(reader.GetOrdinal("FirstName")),
-                            LastName = reader.GetString(reader.GetOrdinal("LastName")),
-                        };
-                        
+                            if (customer == null)
+                            {
+                                customer = new Customer
+                                {
+                                    Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                                    FirstName = reader.GetString(reader.GetOrdinal("First Name")),
+                                    LastName = reader.GetString(reader.GetOrdinal("Last Name")),
+                                };
+                            }
+                            if (_include == "products")
+                            {
+                                Product products = new Product
+                                {
+                                    Title = reader.GetString(reader.GetOrdinal("Title")),
+                                    Description = reader.GetString(reader.GetOrdinal("Description")),
+                                    Price = reader.GetDecimal(reader.GetOrdinal("Price")),
+                                    Quantity = reader.GetInt32(reader.GetOrdinal("Quantity")),
+                                };
+                            customer.ProductList.Add(products);
+                            }
+                        }
                     }
-                   
-               
-                    //Dictionary<int, Product> customerHash = new Dictionary<int, Product>();
-
-                    //while (reader.Read())
-                    //{
-                    //    int customerId = reader.GetInt32(reader.GetOrdinal("Id"));
-                    //    //int productId = reader.GetInt32(reader.GetOrdinal("CustomerId"));
-
-
-                    //    if (!customerHash.ContainsKey(customerId))
-                    //    {
-                    //        customerHash[customerId] = new Product
-                    //        {
-                    //            Id = reader.GetInt32(reader.GetOrdinal("Id")),
-                    //            CustomerId = reader.GetInt32(reader.GetOrdinal("CustomerId")),
-                    //            Title = reader.GetString(reader.GetOrdinal("Title")),
-                    //            Description = reader.GetString(reader.GetOrdinal("Description")),
-                    //            Price = reader.GetInt32(reader.GetOrdinal("Price")),
-                    //            Quantity = reader.GetInt32(reader.GetOrdinal("Quantity")),
-                    //            customer = new Customer
-                    //            {
-                    //                Id = reader.GetInt32(reader.GetOrdinal("CustomerId")),
-                    //                FirstName = reader.GetString(reader.GetOrdinal("FirstName")),
-                    //                LastName = reader.GetString(reader.GetOrdinal("LastName")),
-                    //            }
-                    //        };
-                    //    }
-
-                    //    customerHash[customerId].ProductList
-
-
-                        reader.Close();
-
-                        return Ok(customer);
-                    }
+                    reader.Close();
+                    return Ok(customer);
                 }
             }
         }
 
-// POST api/customers
+        // POST api/customers
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] Customer customer)
         {

@@ -88,11 +88,6 @@ namespace BangazonAPI.Controllers
                     cmd.Parameters.Add(new SqlParameter("@id", id));
                     SqlDataReader reader = await cmd.ExecuteReaderAsync();
 
-                    //if (id != null)
-                    //{
-                    //    cmd.CommandText = $"{cmd.CommandText} WHERE Id = @id";
-                    //}
-
                     if (_include != null)
                     {
                         cmd.CommandText = @"SELECT c.Id,
@@ -108,34 +103,55 @@ namespace BangazonAPI.Controllers
                     }
 
                     Customer customer = null;
-                    if (reader.Read())
+                    while (reader.Read())
                     {
                         customer = new Customer
                         {
                             Id = reader.GetInt32(reader.GetOrdinal("Id")),
                             FirstName = reader.GetString(reader.GetOrdinal("FirstName")),
                             LastName = reader.GetString(reader.GetOrdinal("LastName")),
-
                         };
+                        
                     }
+                   
+               
+                    //Dictionary<int, Product> customerHash = new Dictionary<int, Product>();
 
-                    conn.Open();
-                    using (SqlCommand cmd = conn.CreateCommand())
-                    {
-
-                        if (customer != null)
-                        {
-                            cmd.Parameters.Add(new SqlParameter("@id", customer));
-                        }
-                    }
+                    //while (reader.Read())
+                    //{
+                    //    int customerId = reader.GetInt32(reader.GetOrdinal("Id"));
+                    //    //int productId = reader.GetInt32(reader.GetOrdinal("CustomerId"));
 
 
-                    reader.Close();
+                    //    if (!customerHash.ContainsKey(customerId))
+                    //    {
+                    //        customerHash[customerId] = new Product
+                    //        {
+                    //            Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                    //            CustomerId = reader.GetInt32(reader.GetOrdinal("CustomerId")),
+                    //            Title = reader.GetString(reader.GetOrdinal("Title")),
+                    //            Description = reader.GetString(reader.GetOrdinal("Description")),
+                    //            Price = reader.GetInt32(reader.GetOrdinal("Price")),
+                    //            Quantity = reader.GetInt32(reader.GetOrdinal("Quantity")),
+                    //            customer = new Customer
+                    //            {
+                    //                Id = reader.GetInt32(reader.GetOrdinal("CustomerId")),
+                    //                FirstName = reader.GetString(reader.GetOrdinal("FirstName")),
+                    //                LastName = reader.GetString(reader.GetOrdinal("LastName")),
+                    //            }
+                    //        };
+                    //    }
+
+                    //    customerHash[customerId].ProductList
+
+
+                        reader.Close();
 
                         return Ok(customer);
                     }
                 }
             }
+        }
 
 // POST api/customers
         [HttpPost]

@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace BangazonAPI.Models
 {
-    public class Products
+    public class Product
     {
 
         public int Id { get; set; }
@@ -26,5 +26,7 @@ namespace BangazonAPI.Models
 
         [Required]
         public int CustomerId { get; set; }
+
+        public Customer customer { get; set; }
     }
 }

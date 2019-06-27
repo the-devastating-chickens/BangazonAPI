@@ -13,5 +13,9 @@ namespace BangazonAPI.Models
 
         [Required]
         public string LastName { get; set; }
+
+        public List<Product> ProductList { get; set; } = new List<Product>();
+
+
     }
 }
